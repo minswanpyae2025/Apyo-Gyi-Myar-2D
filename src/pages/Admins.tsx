@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { UserPlus, Shield, Mail, Lock, User, Loader2 } from "lucide-react";
-import { useToast } from "@/src/components/Toast";
+import { useToast } from "../components/Toast";
 
 export default function Admins() {
   const [name, setName] = useState("");

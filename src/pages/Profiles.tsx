@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { Plus, Search, User, Phone, Hash, ArrowUpDown, Loader2 } from "lucide-react";
-import { useToast } from "@/src/components/Toast";
-import { Profile } from "@/src/types";
+import { useToast } from "../components/Toast";
+import { Profile } from "../types";
 
 export default function Profiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);

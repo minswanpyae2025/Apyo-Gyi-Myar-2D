@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { format, addDays } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { CircleDollarSign, ArrowLeftRight, User, Plus, Info, Loader2 } from "lucide-react";
-import { useToast } from "@/src/components/Toast";
-import { Profile, Bet } from "@/src/types";
+import { useToast } from "../components/Toast";
+import { Profile, Bet } from "../types";
 
 export default function Bets() {
   const [profiles, setProfiles] = useState<Profile[]>([]);

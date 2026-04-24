@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Menu, X, Users, CircleDollarSign, Trophy, FileText, UserPlus, LogOut } from "lucide-react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

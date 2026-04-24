@@ -5,16 +5,16 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import React from "react";
-import { AuthProvider, useAuth } from "@/src/components/AuthProvider";
-import Layout from "@/src/components/Layout";
-import Auth from "@/src/pages/Auth";
-import Profiles from "@/src/pages/Profiles";
-import Bets from "@/src/pages/Bets";
-import Results from "@/src/pages/Results";
-import Logs from "@/src/pages/Logs";
-import Admins from "@/src/pages/Admins";
-import { ToastProvider } from "@/src/components/Toast";
-import PageTransition from "@/src/components/PageTransition";
+import { AuthProvider, useAuth } from "./components/AuthProvider";
+import Layout from "./components/Layout";
+import Auth from "./pages/Auth";
+import Profiles from "./pages/Profiles";
+import Bets from "./pages/Bets";
+import Results from "./pages/Results";
+import Logs from "./pages/Logs";
+import Admins from "./pages/Admins";
+import { ToastProvider } from "./components/Toast";
+import PageTransition from "./components/PageTransition";
 import { AnimatePresence } from "motion/react";
 import { useLocation } from "react-router-dom";
 

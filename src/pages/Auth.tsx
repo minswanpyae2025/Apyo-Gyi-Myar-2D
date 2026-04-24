@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { supabase } from "@/src/lib/supabase";
-import { useToast } from "@/src/components/Toast";
+import { supabase } from "../lib/supabase";
+import { useToast } from "../components/Toast";
 import { Loader2 } from "lucide-react";
 
 export default function Auth() {

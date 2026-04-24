@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { format } from "date-fns";
 import { Search, Clock, ArrowUpDown, Filter, ShieldAlert, User } from "lucide-react";
-import { AuditLog, Profile } from "@/src/types";
+import { AuditLog, Profile } from "../types";
 
 export default function Logs() {
   const [logs, setLogs] = useState<AuditLog[]>([]);

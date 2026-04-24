@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { format } from "date-fns";
 import { Trophy, Calendar, Clock, DollarSign, Search, ArrowUpDown, Loader2 } from "lucide-react";
-import { useToast } from "@/src/components/Toast";
-import { Profile, Bet } from "@/src/types";
+import { useToast } from "../components/Toast";
+import { Profile, Bet } from "../types";
 
 const PAYOUT_MULTIPLIER = 80;
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { format } from "date-fns";
-import { Trophy, Calendar, Clock, DollarSign, Search, ArrowUpDown } from "lucide-react";
-import { Profile, Bet } from "@/src/types";
+import { Trophy, Calendar, Clock, DollarSign, Search, ArrowUpDown, Loader2 } from "lucide-react";
+import { useToast } from "../components/Toast";
+import { Profile, Bet } from "../types";
 
 const PAYOUT_MULTIPLIER = 80;
 
@@ -26,10 +27,11 @@ export default function Results() {
   const [searched, setSearched] = useState(false);
 
   const [sortAsc, setSortAsc] = useState(true);
+  const { addToast } = useToast();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!winningNumber || winningNumber.length !== 2) return;
+    if (!winningNumber || winningNumber.length !== 2) { addToast("ပေါက်ဂဏန်းသည် ၂ လုံး ဖြစ်ရမည်။", "error"); return; }
 
     setLoading(true);
     setSearched(true);
@@ -76,6 +78,7 @@ export default function Results() {
       }]);
     } else {
       setWinners([]);
+      addToast("ဤပွဲစဉ်အတွက် ပေါက်သူ မရှိပါ။", "success");
     }
     
     setLoading(false);
@@ -97,13 +100,13 @@ export default function Results() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-800">Draw Results</h2>
+        <h2 className="text-2xl font-bold text-gray-800">ထွက်မည့် ရလဒ်များ</h2>
       </div>
 
       <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 max-w-4xl">
         <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-end gap-4">
           <div className="w-full md:w-auto flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Draw Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ရက်စွဲ</label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -117,7 +120,7 @@ export default function Results() {
           </div>
           
           <div className="w-full md:w-auto flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">အချိန်</label>
             <div className="relative">
               <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <select
@@ -132,7 +135,7 @@ export default function Results() {
           </div>
           
           <div className="w-full md:w-auto flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Winning Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ပေါက်ဂဏန်း</label>
             <div className="relative">
               <Trophy className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-500" />
               <input
@@ -153,8 +156,8 @@ export default function Results() {
             disabled={loading || winningNumber.length !== 2}
             className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 h-[38px] md:h-[40px]"
           >
-            <Search className="w-4 h-4" />
-            Calculate
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            တွက်ချက်မည်
           </button>
         </form>
       </div>
@@ -163,41 +166,41 @@ export default function Results() {
         <div className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
-              <span className="text-gray-500 text-sm font-medium mb-1">Winning Number</span>
+              <span className="text-gray-500 text-sm font-medium mb-1">ပေါက်ဂဏန်း</span>
               <span className="text-4xl font-black font-mono text-blue-600">{winningNumber}</span>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
-              <span className="text-gray-500 text-sm font-medium mb-1">Total Winners</span>
+              <span className="text-gray-500 text-sm font-medium mb-1">စုစုပေါင်း ပေါက်သူများ</span>
               <span className="text-3xl font-bold text-gray-800">{winners.length}</span>
             </div>
             <div className="bg-emerald-50 p-6 rounded-2xl shadow-sm border border-emerald-100 flex flex-col items-center justify-center text-center">
-              <span className="text-emerald-700 text-sm font-medium mb-1">Total Payout</span>
+              <span className="text-emerald-700 text-sm font-medium mb-1">စုစုပေါင်း ပေးချေငွေ</span>
               <span className="text-3xl font-bold text-emerald-600">{totalPayout.toLocaleString()} <span className="text-lg">MMK</span></span>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
-              <h3 className="font-semibold text-gray-700">Winning Bets List</h3>
-              <span className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Multiplier: {PAYOUT_MULTIPLIER}x</span>
+              <h3 className="font-semibold text-gray-700">ပေါက်သော ထီစာရင်း</h3>
+              <span className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded-full">အဆ: {PAYOUT_MULTIPLIER}x</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-100">
                   <tr>
                     <th className="p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={handleSort}>
-                      <div className="flex items-center gap-2"><Clock className="w-4 h-4"/> Time Placed <ArrowUpDown className="w-3 h-3"/></div>
+                      <div className="flex items-center gap-2"><Clock className="w-4 h-4"/> ထိုးသော အချိန် <ArrowUpDown className="w-3 h-3"/></div>
                     </th>
-                    <th className="p-4">Customer</th>
-                    <th className="p-4">Bet Amount</th>
-                    <th className="p-4 rounded-tr-lg">Payout</th>
+                    <th className="p-4">ဖောက်သည်</th>
+                    <th className="p-4">ထိုးကြေး</th>
+                    <th className="p-4 rounded-tr-lg">ရငွေ</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {loading ? (
-                    <tr><td colSpan={4} className="p-8 text-center text-gray-500">Calculating...</td></tr>
+                    <tr><td colSpan={4} className="p-8 text-center text-gray-500">တွက်ချက်နေသည်...</td></tr>
                   ) : winners.length === 0 ? (
-                    <tr><td colSpan={4} className="p-8 text-center text-gray-500">No winners found for this draw.</td></tr>
+                    <tr><td colSpan={4} className="p-8 text-center text-gray-500">ဤပွဲစဉ်အတွက် ပေါက်သူ မရှိပါ။</td></tr>
                   ) : (
                     winners.map(winner => (
                       <tr key={winner.bet_id} className="hover:bg-green-50 transition-colors">

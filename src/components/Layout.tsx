@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Menu, X, Users, CircleDollarSign, Trophy, FileText, UserPlus, LogOut } from "lucide-react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -12,18 +12,18 @@ export default function Layout() {
   };
 
   const navItems = [
-    { name: "Profiles", path: "/", icon: Users },
-    { name: "Log Bets", path: "/bets", icon: CircleDollarSign },
-    { name: "Results", path: "/results", icon: Trophy },
-    { name: "Audit Logs", path: "/logs", icon: FileText },
-    { name: "Admins", path: "/admins", icon: UserPlus },
+    { name: "ပရိုဖိုင်များ", path: "/", icon: Users },
+    { name: "ထီထိုးရန်", path: "/bets", icon: CircleDollarSign },
+    { name: "ရလဒ်များ", path: "/results", icon: Trophy },
+    { name: "မှတ်တမ်းများ", path: "/logs", icon: FileText },
+    { name: "အက်ဒမင်များ", path: "/admins", icon: UserPlus },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Mobile Top Bar */}
       <div className="md:hidden bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-20">
-        <h1 className="font-bold text-xl text-blue-600 tracking-tight">LotteryMgr</h1>
+        <h1 className="font-bold text-xl text-blue-600 tracking-tight">အပျိုကြီးများ 2D</h1>
         <button onClick={() => setSidebarOpen(true)} className="p-2 -mr-2">
           <Menu className="w-6 h-6 text-gray-700" />
         </button>
@@ -42,8 +42,8 @@ export default function Layout() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } flex flex-col`}>
         <div className="p-4 border-b flex justify-between items-center">
-          <h1 className="font-bold text-xl text-blue-600 tracking-tight hidden md:block">LotteryMgr</h1>
-          <h1 className="font-bold text-xl text-blue-600 tracking-tight md:hidden">Menu</h1>
+          <h1 className="font-bold text-xl text-blue-600 tracking-tight hidden md:block">အပျိုကြီးများ 2D</h1>
+          <h1 className="font-bold text-xl text-blue-600 tracking-tight md:hidden">မီနူး</h1>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden p-1">
             <X className="w-5 h-5 text-gray-500" />
           </button>
@@ -77,7 +77,7 @@ export default function Layout() {
             className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut className="w-5 h-5" />
-            Sign Out
+            ထွက်မည်
           </button>
         </div>
       </div>

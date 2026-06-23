@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
-import { Plus, Search, User, Phone, Hash, ArrowUpDown } from "lucide-react";
-import { Profile } from "@/src/types";
+import { supabase } from "../lib/supabase";
+import { Plus, Search, User, Phone, Hash, ArrowUpDown, Loader2 } from "lucide-react";
+import { useToast } from "../components/Toast";
+import { Profile } from "../types";
 
 export default function Profiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const { addToast } = useToast();
   
   // New profile form
   const [name, setName] = useState("");
@@ -30,7 +32,7 @@ export default function Profiles() {
 
   async function handleAddProfile(e: React.FormEvent) {
     e.preventDefault();
-    if (!name || !phone) return;
+    if (!name || !phone) { addToast("အမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ရန်လိုအပ်ပါသည်။", "error"); return; }
     
     setIsAdding(true);
     const { data: user } = await supabase.auth.getUser();
@@ -50,6 +52,9 @@ export default function Profiles() {
       
       setName("");
       setPhone("");
+      addToast("ပရိုဖိုင်အသစ် ထည့်သွင်းပြီးပါပြီ။", "success");
+    } else {
+      addToast("အမှားအယွင်းဖြစ်ပေါ်နေပါသည်။", "error");
     }
     setIsAdding(false);
   }
@@ -75,21 +80,21 @@ export default function Profiles() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-800">Customer Profiles</h2>
+        <h2 className="text-2xl font-bold text-gray-800">ဖောက်သည် ပရိုဖိုင်များ</h2>
       </div>
 
       <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-6">
         <div className="flex-1">
           <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600" />
-            Add New Profile
+            ပရိုဖိုင်အသစ်ထည့်ရန်
           </h3>
           <form onSubmit={handleAddProfile} className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Full Name"
+                placeholder="အမည်အပြည့်အစုံ"
                 className="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                 value={name}
                 onChange={e => setName(e.target.value)}
@@ -100,7 +105,7 @@ export default function Profiles() {
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="tel"
-                placeholder="Phone Number"
+                placeholder="ဖုန်းနံပါတ်"
                 className="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
@@ -112,7 +117,8 @@ export default function Profiles() {
               disabled={isAdding}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
             >
-              {isAdding ? "Adding..." : "Add Profile"}
+              {isAdding ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
+              {isAdding ? "ထည့်နေသည်..." : "ပရိုဖိုင်ထည့်ရန်"}
             </button>
           </form>
         </div>
@@ -124,7 +130,7 @@ export default function Profiles() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by name, ID, or phone..."
+              placeholder="အမည်၊ ID (သို့) ဖုန်းဖြင့် ရှာဖွေရန်..."
               className="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-gray-50"
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -140,18 +146,18 @@ export default function Profiles() {
                   <div className="flex items-center gap-2"><Hash className="w-4 h-4"/> ID <ArrowUpDown className="w-3 h-3"/></div>
                 </th>
                 <th className="p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort("name")}>
-                  <div className="flex items-center gap-2"><User className="w-4 h-4"/> Name <ArrowUpDown className="w-3 h-3"/></div>
+                  <div className="flex items-center gap-2"><User className="w-4 h-4"/> အမည် <ArrowUpDown className="w-3 h-3"/></div>
                 </th>
                 <th className="p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSort("phone_number")}>
-                  <div className="flex items-center gap-2"><Phone className="w-4 h-4"/> Phone <ArrowUpDown className="w-3 h-3"/></div>
+                  <div className="flex items-center gap-2"><Phone className="w-4 h-4"/> ဖုန်း <ArrowUpDown className="w-3 h-3"/></div>
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
-                <tr><td colSpan={3} className="p-8 text-center text-gray-500">Loading profiles...</td></tr>
+                <tr><td colSpan={3} className="p-8 text-center text-gray-500">ပရိုဖိုင်များ ရယူနေသည်...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={3} className="p-8 text-center text-gray-500">No profiles found.</td></tr>
+                <tr><td colSpan={3} className="p-8 text-center text-gray-500">ပရိုဖိုင်များ မတွေ့ပါ။</td></tr>
               ) : (
                 filtered.map(profile => (
                   <tr key={profile.id} className="hover:bg-gray-50 transition-colors">

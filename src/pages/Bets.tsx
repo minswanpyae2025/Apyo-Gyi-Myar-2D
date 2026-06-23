@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "../lib/supabase";
 import { format, addDays } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
-import { CircleDollarSign, ArrowLeftRight, User, Plus, Info } from "lucide-react";
-import { Profile, Bet } from "@/src/types";
+import { CircleDollarSign, ArrowLeftRight, User, Plus, Info, Loader2 } from "lucide-react";
+import { useToast } from "../components/Toast";
+import { Profile, Bet } from "../types";
 
 export default function Bets() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -16,6 +17,7 @@ export default function Bets() {
   const [isReverse, setIsReverse] = useState(false);
   
   const [submitting, setSubmitting] = useState(false);
+  const { addToast } = useToast();
 
   useEffect(() => {
     fetchProfiles();
@@ -70,7 +72,9 @@ export default function Bets() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (number.length !== 2 || !amount || !selectedProfileId) return;
+    if (number.length !== 2) { addToast("ဂဏန်းသည် ၂ လုံး ဖြစ်ရမည်။", "error"); return; }
+    if (!amount || parseInt(amount, 10) < 100) { addToast("အနည်းဆုံး ထိုးကြေး 100 ကျပ် ဖြစ်ရမည်။", "error"); return; }
+    if (!selectedProfileId) { addToast("ပရိုဖိုင်ရွေးချယ်ပါ။", "error"); return; }
 
     setSubmitting(true);
     const { session, draw_date } = getYangonDrawSession();
@@ -116,6 +120,7 @@ export default function Bets() {
       setNumber("");
       setAmount("");
       setIsReverse(false);
+      addToast("ထီထိုးခြင်း အောင်မြင်ပါသည်။", "success");
     }
     
     setSubmitting(false);
@@ -124,13 +129,13 @@ export default function Bets() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-800">Log Bet</h2>
+        <h2 className="text-2xl font-bold text-gray-800">ထီထိုးရန်</h2>
       </div>
 
       <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Customer Profile</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ဖောက်သည် ပရိုဖိုင်</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <select
@@ -139,7 +144,7 @@ export default function Bets() {
                 onChange={e => setSelectedProfileId(e.target.value)}
                 required
               >
-                <option value="" disabled>Select a profile...</option>
+                <option value="" disabled>ပရိုဖိုင်ရွေးချယ်ပါ...</option>
                 {profiles.map(p => (
                   <option key={p.id} value={p.id}>{p.name} ({p.phone_number})</option>
                 ))}
@@ -149,7 +154,7 @@ export default function Bets() {
 
           <div className="flex gap-4">
             <div className="flex-1 border p-4 rounded-xl relative overflow-hidden bg-gray-50 border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-1">2-Digit Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">၂ လုံးဂဏန်း</label>
               <input
                 type="text"
                 placeholder="00-99"
@@ -163,7 +168,7 @@ export default function Bets() {
             </div>
 
             <div className="flex-1 border p-4 rounded-xl relative overflow-hidden bg-gray-50 border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Amount (MMK)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">ပမာဏ (ကျပ်)</label>
               <div className="relative">
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
@@ -185,9 +190,9 @@ export default function Bets() {
                 <ArrowLeftRight className="w-5 h-5" />
               </div>
               <div>
-                <p className="font-semibold text-gray-800 tracking-tight">"R" (Reverse)</p>
+                <p className="font-semibold text-gray-800 tracking-tight">"R" (ပြောင်းပြန်)</p>
                 <p className="text-xs text-gray-500 max-w-[200px] leading-tight mt-0.5">
-                  Automatically generate the reverse number bet. Disabled for double numbers.
+                  ပြောင်းပြန်ဂဏန်းကို အလိုအလျောက် ထိုးမည်။ အပူးဂဏန်းများအတွက် ပိတ်ထားသည်။
                 </p>
               </div>
             </div>
@@ -206,7 +211,7 @@ export default function Bets() {
 
           <div className="flex items-start gap-2 bg-yellow-50 text-yellow-800 p-3 rounded-lg text-sm border border-yellow-100">
             <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-            <p>Session automatically allocated based on Yangon Time: <b>{getYangonDrawSession().draw_date}</b> for <b>{getYangonDrawSession().session}</b> draw.</p>
+            <p>ရန်ကုန်စံတော်ချိန်ကို အခြေခံ၍ အချိန်ကို အလိုအလျောက် သတ်မှတ်ထားသည်: <b>{getYangonDrawSession().draw_date}</b> for <b>{getYangonDrawSession().session}</b> draw.</p>
           </div>
 
           <button
@@ -214,8 +219,8 @@ export default function Bets() {
             disabled={submitting || number.length !== 2 || !amount || !selectedProfileId}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="w-5 h-5" />
-            {submitting ? "Logging Bet..." : "Log Bet"}
+            {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+            {submitting ? "ထီထိုးနေသည်..." : "ထီထိုးရန်"}
           </button>
         </form>
       </div>
@@ -223,22 +228,22 @@ export default function Bets() {
       {/* Recent Bets */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden max-w-4xl">
         <div className="p-4 border-b bg-gray-50">
-          <h3 className="font-semibold text-gray-700">Recent Bets</h3>
+          <h3 className="font-semibold text-gray-700">လတ်တလော ထီများ</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="text-gray-500 font-medium border-b border-gray-100">
               <tr>
-                <th className="p-4">Time</th>
-                <th className="p-4">Profile</th>
-                <th className="p-4">Number</th>
-                <th className="p-4">Amount</th>
-                <th className="p-4">Session</th>
+                <th className="p-4">အချိန်</th>
+                <th className="p-4">ပရိုဖိုင်</th>
+                <th className="p-4">ဂဏန်း</th>
+                <th className="p-4">ပမာဏ</th>
+                <th className="p-4">အချိန်</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {recentBets.length === 0 ? (
-                <tr><td colSpan={5} className="p-8 text-center text-gray-500">No bets recently.</td></tr>
+                <tr><td colSpan={5} className="p-8 text-center text-gray-500">လတ်တလော ထီမရှိပါ။</td></tr>
               ) : (
                 recentBets.map(bet => {
                   const profile = profiles.find(p => p.id === bet.profile_id);
